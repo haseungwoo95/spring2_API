@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.koreait.spring2.HelloMapper">
+
+    <insert id="insApartmentInfoArr">
+        INSERT INTO apartment_info
+        (deal_amount, build_year, deal_year, deal_month, deal_day
+        , dong, apartment_name, area_for_exclusive_use, jibun, flr
+         , location_cd)
+         VALUES
+        <foreach collection="arr" item="item" separator=",">
+        (
+            #{item.deal_amount}, #{item.build_year}, #{item.deal_year}
+                , #{item.deal_month}, #{item.deal_day}
+                , #{item.dong}, #{item.apartment_name}, #{item.area_for_exclusive_use}
+                , #{item.jibun}, #{item.flr}, #{location_cd}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selApartmentInfoList" resultType="ApartmentInfoEntity">
+        SELECT A.*
+        FROM apartment_info A
+                 INNER JOIN location_code B
+                            ON A.location_cd = B.cd
+          WHERE A.deal_year = #{deal_year}
+          AND A.deal_month = #{deal_month}
+          AND B.external_cd = #{external_cd}
+    </select>
+
+    <select id="selLocationCodeList" resultType="LocationCodeEntity">
+        SELECT cd, local_nm, external_cd
+        FROM location_code
+            <if test="external_cd != null and external_cd != ''">
+                WHERE external_cd = #{external_cd}
+            </if>
+    </select>
+
+</mapper>
